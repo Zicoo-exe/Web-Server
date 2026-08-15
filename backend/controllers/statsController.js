@@ -1,16 +1,12 @@
-const { getSystemStats } = require('../services/systemStats');
-const { getPhoneStats } = require('../services/remoteStats');
+const systemStats = require("../services/systemStats");
 
-exports.getStats = async (req, res, next) => {
+async function getStats(req, res, next) {
   try {
-    const stats = await getSystemStats();
+    const stats = systemStats.getAllStats();
     res.json(stats);
-  } catch (err) { next(err); }
-};
+  } catch (err) {
+    next(err);
+  }
+}
 
-exports.getPhoneStats = async (req, res, next) => {
-  try {
-    const stats = await getPhoneStats();
-    res.json(stats);
-  } catch (err) { next(err); }
-};
+module.exports = { getStats };

@@ -1,99 +1,123 @@
-requireAuth();
+const POLL_MS = 2000;
+const BOT_ID = new URLSearchParams(location.search).get("id") || "default";
 
-async function renderStats() {
+const el = (id) => document.getElementById(id);
+const fmtMiB = (bytes) => (bytes / 1024 / 1024).toFixed(1);
+const fmtGB = (bytes) => (bytes / 1024 / 1024 / 1024).toFixed(2);
+
+// simple sparkline history buffers
+const history = { cpu: [], mem: [], disk: [] };
+const HISTORY_LEN = 30;
+
+function pushHistory(key, value) {
+  history[key].push(value);
+  if (history[key].length > HISTORY_LEN) history[key].shift();
+}
+
+function drawSparkline(canvasId, dataArr, max, color) {
+  const canvas = el(canvasId);
+  const ctx = canvas.getContext("2d");
+  const w = canvas.clientWidth || 260;
+  const h = canvas.height;
+  canvas.width = w;
+  ctx.clearRect(0, 0, w, h);
+  if (dataArr.length < 2) return;
+
+  ctx.beginPath();
+  dataArr.forEach((val, i) => {
+    const x = (i / (HISTORY_LEN - 1)) * w;
+    const y = h - (Math.min(val, max) / max) * h;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.lineTo(w, h);
+  ctx.lineTo(0, h);
+  ctx.closePath();
+  ctx.fillStyle = color + "22";
+  ctx.fill();
+}
+
+async function fetchJSON(url, opts) {
+  const res = await fetch(url, opts);
+  if (!res.ok) throw new Error(`${url} -> ${res.status}`);
+  return res.json();
+}
+
+async function refreshStats() {
   try {
-    const stats = await api.getStats();
-    document.getElementById('cpuUsage').textContent = `${stats.cpu.usagePercent}%`;
-    document.getElementById('cpuBrand').textContent = stats.cpu.brand;
-    document.getElementById('memUsage').textContent = `${stats.memory.usagePercent}% (${stats.memory.used} / ${stats.memory.total})`;
-    document.getElementById('hostname').textContent = stats.os.hostname;
-    document.getElementById('uptime').textContent = stats.os.uptime;
+    const stats = await fetchJSON("/api/stats");
 
-    const diskContainer = document.getElementById('diskList');
-    diskContainer.innerHTML = stats.disks.map(d =>
-      `<div class="disk-row"><span>${d.mount}</span><span>${d.used} / ${d.total} (${d.usagePercent}%)</span></div>`
-    ).join('');
+    el("stat-cpu-value").textContent = `${stats.cpu.usagePercent.toFixed(1)}%`;
+    el("bot-cpu-inline").textContent = `CPU ${stats.cpu.usagePercent.toFixed(1)}%`;
+    pushHistory("cpu", stats.cpu.usagePercent);
+    drawSparkline("chart-cpu", history.cpu, 100, "#4d8dff");
+
+    el("stat-mem-value").textContent = `${fmtMiB(stats.memory.used)} / ${fmtMiB(stats.memory.total)} MiB`;
+    el("bot-mem-inline").textContent = `MEM ${fmtMiB(stats.memory.used)} MiB`;
+    pushHistory("mem", (stats.memory.used / stats.memory.total) * 100);
+    drawSparkline("chart-mem", history.mem, 100, "#f2b93d");
+
+    el("stat-disk-value").textContent = `${fmtGB(stats.disk.used)} / ${fmtGB(stats.disk.total)} GB`;
+    pushHistory("disk", (stats.disk.used / stats.disk.total) * 100);
+    drawSparkline("chart-disk", history.disk, 100, "#34c77b");
+
+    el("dev-model").textContent = stats.device.model || "—";
+    el("dev-battery").textContent = stats.device.battery ? `${stats.device.battery}%` : "—";
+    el("dev-ip").textContent = stats.device.localIp || "—";
+    el("dev-pubip").textContent = stats.device.publicIp || "—";
+
+    el("last-update").textContent = new Date().toLocaleTimeString();
   } catch (err) {
-    console.error('Failed to load stats', err);
+    console.error("stats poll failed", err);
   }
 }
 
-async function renderPhoneStats() {
+async function refreshServer() {
   try {
-    const phone = await apiRequest('/stats/phone');
-    const card = document.getElementById('phoneCard');
-    if (!phone.online) {
-      card.innerHTML = `<h3>Mobile</h3><p style="color:#ff6b6b">Offline</p>`;
-      return;
-    }
-    card.innerHTML = `
-      <h3>Mobile</h3>
-      <p>${phone.cpu.usagePercent}% CPU</p>
-      <small>${phone.memory.used} / ${phone.memory.total} RAM</small><br>
-      <small>${phone.storage.used} / ${phone.storage.total} storage</small>
-    `;
+    const server = await fetchJSON(`/api/servers/${BOT_ID}`);
+
+    el("bot-name").textContent = server.name;
+    el("bot-host").textContent = server.host || "—";
+
+    const pill = el("bot-status");
+    pill.textContent = server.status;
+    pill.className = "status-pill " + server.status.toLowerCase();
+
+    el("info-status").textContent = server.status;
+    el("info-uptime").textContent = server.uptime || "—";
+    el("info-pid").textContent = server.pid ?? "—";
+    el("info-node").textContent = server.nodeVersion || "—";
+    el("info-restarts").textContent = server.restarts ?? 0;
+
+    const running = server.status === "Online";
+    el("btn-start").disabled = running;
+    el("btn-stop").disabled = !running;
+    el("btn-restart").disabled = !running;
   } catch (err) {
-    console.error('Phone stats failed', err);
+    console.error("server poll failed", err);
   }
 }
 
-async function renderServers() {
+async function doAction(action) {
+  const btn = el(`btn-${action}`);
+  btn.disabled = true;
   try {
-    const servers = await api.getServers();
-    const list = document.getElementById('serverList');
-    if (servers.length === 0) {
-      list.innerHTML = `<p class="empty">No servers added yet.</p>`;
-      return;
-    }
-    list.innerHTML = servers.map(s => `
-      <div class="server-card">
-        <div>
-          <strong>${s.name}</strong>
-          <span class="status status-${s.status}">${s.status}</span>
-        </div>
-        <div class="server-actions">
-          ${s.status === 'running'
-            ? `<button onclick="stopServer('${s.id}')">Stop</button>`
-            : `<button onclick="startServer('${s.id}')">Start</button>`}
-          <button onclick="window.location.href='/pages/console.html?id=${s.id}'">Console</button>
-          <button onclick="deleteServer('${s.id}')">Delete</button>
-        </div>
-      </div>
-    `).join('');
+    await fetchJSON(`/api/servers/${BOT_ID}/${action}`, { method: "POST" });
   } catch (err) {
-    console.error('Failed to load servers', err);
+    alert(`Failed to ${action} bot: ${err.message}`);
+  } finally {
+    refreshServer();
   }
 }
 
-async function startServer(id) {
-  await api.startServer(id);
-  renderServers();
-}
+el("btn-start").addEventListener("click", () => doAction("start"));
+el("btn-stop").addEventListener("click", () => doAction("stop"));
+el("btn-restart").addEventListener("click", () => doAction("restart"));
 
-async function stopServer(id) {
-  await api.stopServer(id);
-  renderServers();
-}
-
-async function deleteServer(id) {
-  if (!confirm('Delete this server?')) return;
-  await api.deleteServer(id);
-  renderServers();
-}
-
-document.getElementById('addServerForm')?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const name = document.getElementById('serverName').value;
-  const command = document.getElementById('serverCommand').value;
-  const cwd = document.getElementById('serverCwd').value;
-  await api.createServer({ name, command, cwd });
-  e.target.reset();
-  renderServers();
-});
-
-renderStats();
-renderPhoneStats();
-renderServers();
-setInterval(renderStats, 5000);
-setInterval(renderPhoneStats, 8000);
-setInterval(renderServers, 8000);
+refreshStats();
+refreshServer();
+setInterval(refreshStats, POLL_MS);
+setInterval(refreshServer, POLL_MS);

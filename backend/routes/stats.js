@@ -1,10 +1,8 @@
-﻿const express = require('express');
+﻿const express = require("express");
 const router = express.Router();
-const auth = require('../middleware/auth');
-const ctrl = require('../controllers/statsController');
+const { getStats } = require("../controllers/statsController");
+const auth = require("../middleware/auth");
 
-router.use(auth);
-router.get('/', ctrl.getStats);
-router.get('/phone', ctrl.getPhoneStats);
+router.get("/", auth, getStats);
 
 module.exports = router;

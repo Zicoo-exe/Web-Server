@@ -1,11 +1,126 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>HomeServer Panel</title></head>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bot Panel | Dashboard</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/dashboard.css">
+</head>
 <body>
-<script>
-  window.location.href = localStorage.getItem('hsp_token')
-    ? '/pages/dashboard.html'
-    : '/pages/login.html';
-</script>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">◆</span>
+        <span class="brand-name">BotPanel</span>
+      </div>
+
+      <nav class="nav-group">
+        <span class="nav-label">General</span>
+        <a href="#" class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">▤</span> Dashboard
+        </a>
+        <a href="pages/console.html" class="nav-item" data-page="console">
+          <span class="nav-icon">▢</span> Console
+        </a>
+        <a href="pages/settings.html" class="nav-item" data-page="settings">
+          <span class="nav-icon">⚙</span> Settings
+        </a>
+      </nav>
+
+      <nav class="nav-group">
+        <span class="nav-label">Management</span>
+        <a href="pages/files.html" class="nav-item" data-page="files">
+          <span class="nav-icon">▣</span> Files
+        </a>
+        <a href="pages/servers.html" class="nav-item" data-page="servers">
+          <span class="nav-icon">▥</span> Bots
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="logout-btn" class="nav-item logout">
+          <span class="nav-icon">⏻</span> Account
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <!-- SERVER STATUS HEADER -->
+      <header class="server-header">
+        <div class="server-header-left">
+          <h1 id="bot-name">Loading…</h1>
+          <span id="bot-status" class="status-pill offline">Offline</span>
+        </div>
+        <div class="server-header-meta">
+          <span id="bot-host">—</span>
+          <span class="dot">•</span>
+          <span id="bot-cpu-inline">CPU 0%</span>
+          <span class="dot">•</span>
+          <span id="bot-mem-inline">MEM 0 MiB</span>
+        </div>
+        <div class="server-header-actions">
+          <button id="btn-start" class="btn btn-start">▶ Start</button>
+          <button id="btn-restart" class="btn btn-restart">↻ Restart</button>
+          <button id="btn-stop" class="btn btn-stop">■ Stop</button>
+        </div>
+      </header>
+
+      <!-- INFO CARDS -->
+      <section class="card-grid">
+        <div class="card">
+          <h3 class="card-title">Server Info</h3>
+          <dl class="info-list">
+            <div><dt>Status</dt><dd id="info-status">—</dd></div>
+            <div><dt>Uptime</dt><dd id="info-uptime">—</dd></div>
+            <div><dt>PID</dt><dd id="info-pid">—</dd></div>
+            <div><dt>Node Version</dt><dd id="info-node">—</dd></div>
+            <div><dt>Restarts</dt><dd id="info-restarts">0</dd></div>
+          </dl>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Device Info</h3>
+          <dl class="info-list">
+            <div><dt>Model</dt><dd id="dev-model">—</dd></div>
+            <div><dt>Battery</dt><dd id="dev-battery">—</dd></div>
+            <div><dt>Local IP</dt><dd id="dev-ip">—</dd></div>
+            <div><dt>Public IP</dt><dd id="dev-pubip">—</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- LIVE STATS -->
+      <section class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-head">
+            <span>CPU Usage</span>
+            <strong id="stat-cpu-value">0%</strong>
+          </div>
+          <canvas id="chart-cpu" height="70"></canvas>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head">
+            <span>Memory Usage</span>
+            <strong id="stat-mem-value">0 / 0 MiB</strong>
+          </div>
+          <canvas id="chart-mem" height="70"></canvas>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head">
+            <span>Storage</span>
+            <strong id="stat-disk-value">0 / 0 GB</strong>
+          </div>
+          <canvas id="chart-disk" height="70"></canvas>
+        </div>
+      </section>
+
+      <footer class="panel-footer">Panel is polling every 2s • Last update <span id="last-update">—</span></footer>
+    </main>
+  </div>
+
+<script src="js/dashboard.js"></script>
 </body>
 </html>

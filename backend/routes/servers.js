@@ -1,10 +1,13 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const auth = require('../middleware/auth');
-const ctrl = require('../controllers/statsController');
+const auth = require("../middleware/auth");
+const {
+  getServer, startServer, stopServer, restartServer,
+} = require("../controllers/serverController");
 
-router.use(auth);
-router.get('/', ctrl.getStats);
-router.get('/phone', ctrl.getPhoneStats);
+router.get("/:id", auth, getServer);
+router.post("/:id/start", auth, startServer);
+router.post("/:id/stop", auth, stopServer);
+router.post("/:id/restart", auth, restartServer);
 
 module.exports = router;

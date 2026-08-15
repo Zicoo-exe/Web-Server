@@ -1,42 +1,32 @@
-const serverManager = require('../services/serverManager');
+const serverManager = require("../services/serverManager");
 
-exports.list = (req, res, next) => {
+async function getServer(req, res, next) {
   try {
-    res.json(serverManager.listServers());
+    const info = serverManager.getStatus(req.params.id);
+    if (!info) return res.status(404).json({ error: "Bot not found" });
+    res.json(info);
   } catch (err) { next(err); }
-};
+}
 
-exports.get = (req, res, next) => {
+async function startServer(req, res, next) {
   try {
-    res.json(serverManager.getServer(req.params.id));
-  } catch (err) { err.status = 404; next(err); }
-};
-
-exports.create = (req, res, next) => {
-  try {
-    const { name, command, args, cwd } = req.body;
-    if (!name || !command) { const e = new Error('name and command are required'); e.status = 400; throw e; }
-    res.status(201).json(serverManager.createServer({ name, command, args, cwd }));
+    await serverManager.start(req.params.id);
+    res.json({ ok: true });
   } catch (err) { next(err); }
-};
+}
 
-exports.remove = (req, res, next) => {
+async function stopServer(req, res, next) {
   try {
-    serverManager.deleteServer(req.params.id);
-    res.json({ success: true });
+    await serverManager.stop(req.params.id);
+    res.json({ ok: true });
   } catch (err) { next(err); }
-};
+}
 
-exports.start = (req, res, next) => {
+async function restartServer(req, res, next) {
   try {
-    const pid = serverManager.startServer(req.params.id);
-    res.json({ success: true, pid });
-  } catch (err) { err.status = 400; next(err); }
-};
+    await serverManager.restart(req.params.id);
+    res.json({ ok: true });
+  } catch (err) { next(err); }
+}
 
-exports.stop = (req, res, next) => {
-  try {
-    serverManager.stopServer(req.params.id);
-    res.json({ success: true });
-  } catch (err) { err.status = 400; next(err); }
-};
+module.exports = { getServer, startServer, stopServer, restartServer };
