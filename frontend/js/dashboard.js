@@ -1,5 +1,6 @@
 const POLL_MS = 2000;
-const BOT_ID = new URLSearchParams(location.search).get("id") || "default";
+const rawId = new URLSearchParams(location.search).get("id");
+const BOT_ID = rawId && rawId !== "null" ? rawId : "default";
 
 const el = (id) => document.getElementById(id);
 const fmtMiB = (bytes) => (bytes / 1024 / 1024).toFixed(1);

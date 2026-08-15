@@ -1,10 +1,12 @@
-[
-  {
-    "id": "u4kjy30jsgmstsed2v",
-    "name": "test",
-    "command": "node -e \"setInterval(()=>console.log('tick'),1000)\"",
-    "args": [],
-    "cwd": ".",
-    "createdAt": 1786762734007
+{
+  "default": {
+    "name": "Dummy Test Bot",
+    "host": "localhost:4000",
+    "entry": "dummy-bot.js",
+    "cwd": "C:\\Users\\pradi\\Pictures\\server hosting\\backend",
+    "env": {
+      "NODE_ENV": "development"
+    },
+    "restarts": 0
   }
-]
+}
