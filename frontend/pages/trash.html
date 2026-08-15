@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trash | BotPanel</title>
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="../css/dashboard.css">
+<link rel="stylesheet" href="../css/files.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">◆</span><span class="brand-name">BotPanel</span></div>
+      <nav class="nav-group">
+        <span class="nav-label">General</span>
+        <a href="../index.html" class="nav-item">▤ Dashboard</a>
+        <a href="console.html" class="nav-item">▢ Console</a>
+        <a href="settings.html" class="nav-item">⚙ Settings</a>
+      </nav>
+      <nav class="nav-group">
+        <span class="nav-label">Management</span>
+        <a href="files.html" class="nav-item">▣ Files</a>
+        <a href="servers.html" class="nav-item">▥ Bots</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="server-header">
+        <div class="server-header-left"><h1>Trash</h1></div>
+        <div class="server-header-actions">
+          <a href="files.html" class="btn btn-restart">← Back to Files</a>
+          <button id="btn-empty-trash" class="btn btn-stop">Empty Trash</button>
+        </div>
+      </header>
+
+      <p class="trash-note">Items are permanently deleted 3 days after being trashed.</p>
+
+      <section class="card">
+        <table class="file-table">
+          <thead>
+            <tr><th>Name</th><th>Original Location</th><th>Deleted</th><th>Expires</th><th></th></tr>
+          </thead>
+          <tbody id="trash-list">
+            <tr><td colspan="5">Loading…</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+<script src="../js/trash.js"></script>
+</body>
+</html>

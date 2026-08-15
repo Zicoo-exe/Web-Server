@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Files | BotPanel</title>
+<title>Files | HomeServer Panel</title>
 <link rel="stylesheet" href="../css/main.css">
 <link rel="stylesheet" href="../css/dashboard.css">
 <link rel="stylesheet" href="../css/files.css">
@@ -14,24 +14,38 @@
       <div class="brand"><span class="brand-mark">◆</span><span class="brand-name">BotPanel</span></div>
       <nav class="nav-group">
         <span class="nav-label">General</span>
-        <a href="../index.html" class="nav-item">▤ Dashboard</a>
+        <a href="dashboard.html" class="nav-item">▤ Dashboard</a>
         <a href="console.html" class="nav-item">▢ Console</a>
         <a href="settings.html" class="nav-item">⚙ Settings</a>
       </nav>
       <nav class="nav-group">
         <span class="nav-label">Management</span>
         <a href="files.html" class="nav-item active">▣ Files</a>
-        <a href="servers.html" class="nav-item">▥ Bots</a>
+        <a href="server.html" class="nav-item">▥ Bots</a>
       </nav>
     </aside>
 
     <main class="main">
       <header class="server-header">
-        <div class="server-header-left"><h1>Files</h1></div>
-        <div id="breadcrumb" class="breadcrumb">/</div>
+        <div class="server-header-left"><h1>File Manager</h1></div>
+        <a href="trash.html" class="btn btn-restart">🗑 Trash</a>
       </header>
 
-      <section class="card">
+      <section class="card" id="dropzone">
+        <div class="file-toolbar">
+          <input id="search" class="file-search" placeholder="Search this folder…">
+          <div class="file-toolbar-actions">
+            <button id="btn-new-dir" class="btn btn-restart">+ Directory</button>
+            <button id="btn-new-file" class="btn btn-restart">+ File</button>
+            <label class="btn btn-start" style="cursor:pointer;">
+              ⬆ Upload .zip
+              <input id="upload-input" type="file" accept=".zip" hidden>
+            </label>
+          </div>
+        </div>
+
+        <div id="breadcrumb" class="breadcrumb">/</div>
+
         <table class="file-table">
           <thead>
             <tr><th>Name</th><th>Size</th><th>Modified</th><th></th></tr>
@@ -40,6 +54,10 @@
             <tr><td colspan="4">Loading…</td></tr>
           </tbody>
         </table>
+
+        <div id="drop-overlay" class="drop-overlay">
+          <div class="drop-overlay-inner">⬆ Drop .zip to upload</div>
+        </div>
       </section>
     </main>
   </div>

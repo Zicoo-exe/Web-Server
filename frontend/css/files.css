@@ -1,4 +1,11 @@
-.breadcrumb { color: var(--text-dim); font-family: monospace; font-size: 13px; }
+.file-toolbar { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.file-search {
+  flex: 1; min-width: 200px; background: var(--panel-alt); border: 1px solid var(--border);
+  color: var(--text); padding: 8px 12px; border-radius: 7px; font-size: 13px;
+}
+.file-toolbar-actions { display: flex; gap: 8px; }
+
+.breadcrumb { color: var(--text-dim); font-family: monospace; font-size: 13px; margin-bottom: 10px; }
 
 .file-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .file-table th {
@@ -13,8 +20,42 @@
 .file-name { cursor: pointer; }
 .file-up { cursor: pointer; color: var(--accent); }
 
-.btn-delete {
-  background: var(--panel-alt); border: 1px solid var(--border); color: var(--red);
-  border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer;
+.btn-delete, .btn-restore {
+  background: var(--panel-alt); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; margin-right: 6px;
 }
+.btn-delete { color: var(--red); }
+.btn-restore { color: var(--green); }
 .btn-delete:hover { background: rgba(239,75,75,.1); }
+.btn-restore:hover { background: rgba(52,199,123,.1); }
+
+.trash-note { color: var(--text-dim); font-size: 13px; margin: 0 0 14px; }
+
+#dropzone { position: relative; }
+
+.drop-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(77, 141, 255, 0.08);
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+#dropzone.drag-active .drop-overlay {
+  display: flex;
+}
+
+.drop-overlay-inner {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+}
