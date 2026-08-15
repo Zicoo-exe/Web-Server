@@ -1,60 +1,75 @@
-const os = require('os');
-const multer = require('multer');
-const fileManager = require('../services/fileManager');
+const fs = require("fs");
+const path = require("path");
 
-const upload = multer({ dest: os.tmpdir() });
-exports.uploadMiddleware = upload.single('file');
+// Root directory the file browser is allowed to see — change this to whatever you want exposed.
+const ROOT_DIR = path.join(__dirname, "../../data");
 
-exports.list = (req, res, next) => {
+function safeResolve(relativePath) {
+  const target = path.join(ROOT_DIR, relativePath || "");
+  const resolved = path.resolve(target);
+  if (!resolved.startsWith(path.resolve(ROOT_DIR))) {
+    throw new Error("Path traversal blocked");
+  }
+  return resolved;
+}
+
+async function listFiles(req, res, next) {
   try {
-    const relPath = req.query.path || '.';
-    res.json(fileManager.listDir(req.params.serverId, relPath));
-  } catch (err) { err.status = 400; next(err); }
-};
+    const relPath = req.query.path || "";
+    const dirPath = safeResolve(relPath);
 
-exports.upload = (req, res, next) => {
-  try {
-    if (!req.file) { const e = new Error('No file uploaded'); e.status = 400; throw e; }
-    const relPath = req.query.path || '.';
-    fileManager.uploadZip(req.params.serverId, relPath, req.file.path, req.file.originalname);
-    res.json({ success: true });
-  } catch (err) { err.status = 400; next(err); }
-};
+    const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+    const items = entries.map((entry) => {
+      const fullPath = path.join(dirPath, entry.name);
+      const stats = fs.statSync(fullPath);
+      return {
+        name: entry.name,
+        isDirectory: entry.isDirectory(),
+        size: entry.isDirectory() ? null : stats.size,
+        modified: stats.mtime,
+      };
+    });
 
-exports.mkdir = (req, res, next) => {
-  try {
-    const { path: relPath, name } = req.body;
-    if (!name) { const e = new Error('Folder name required'); e.status = 400; throw e; }
-    fileManager.mkdir(req.params.serverId, relPath || '.', name);
-    res.json({ success: true });
-  } catch (err) { err.status = 400; next(err); }
-};
+    // folders first, then alphabetical
+    items.sort((a, b) => {
+      if (a.isDirectory !== b.isDirectory) return a.isDirectory ? -1 : 1;
+      return a.name.localeCompare(b.name);
+    });
 
-exports.remove = (req, res, next) => {
+    res.json({ path: relPath, items });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function readFile(req, res, next) {
   try {
     const relPath = req.query.path;
-    if (!relPath) { const e = new Error('path is required'); e.status = 400; throw e; }
-    fileManager.softDelete(req.params.serverId, relPath);
-    res.json({ success: true });
-  } catch (err) { err.status = 400; next(err); }
-};
+    if (!relPath) return res.status(400).json({ error: "path is required" });
 
-exports.trashList = (req, res, next) => {
-  try {
-    res.json(fileManager.listTrash(req.params.serverId));
-  } catch (err) { next(err); }
-};
+    const filePath = safeResolve(relPath);
+    const stats = fs.statSync(filePath);
+    if (stats.isDirectory()) return res.status(400).json({ error: "Cannot read a directory" });
 
-exports.trashRestore = (req, res, next) => {
-  try {
-    fileManager.restore(req.params.trashId);
-    res.json({ success: true });
-  } catch (err) { err.status = 400; next(err); }
-};
+    const content = fs.readFileSync(filePath, "utf-8");
+    res.json({ path: relPath, content });
+  } catch (err) {
+    next(err);
+  }
+}
 
-exports.trashDelete = (req, res, next) => {
+async function deleteFile(req, res, next) {
   try {
-    fileManager.permanentDelete(req.params.trashId);
-    res.json({ success: true });
-  } catch (err) { err.status = 400; next(err); }
-};
+    const relPath = req.body.path;
+    if (!relPath) return res.status(400).json({ error: "path is required" });
+
+    const targetPath = safeResolve(relPath);
+    const stats = fs.statSync(targetPath);
+    stats.isDirectory() ? fs.rmdirSync(targetPath, { recursive: true }) : fs.unlinkSync(targetPath);
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { listFiles, readFile, deleteFile };

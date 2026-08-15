@@ -17,7 +17,6 @@ app.use('/api/stats', require('./routes/stats'));
 app.use('/api/console', require('./routes/console'));
 app.use('/api/actions', require('./routes/actions'));
 app.use('/api/files', require('./routes/files'));
-
 const frontendPath = path.join(__dirname, '..', 'frontend');
 app.use(express.static(frontendPath));
 

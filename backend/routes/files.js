@@ -1,15 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const auth = require('../middleware/auth');
-const ctrl = require('../controllers/fileController');
+const auth = require("../middleware/auth");
+const { listFiles, readFile, deleteFile } = require("../controllers/fileController");
 
-router.use(auth);
-router.get('/:serverId/trash/list', ctrl.trashList);
-router.post('/trash/:trashId/restore', ctrl.trashRestore);
-router.delete('/trash/:trashId', ctrl.trashDelete);
-router.get('/:serverId', ctrl.list);
-router.post('/:serverId/upload', ctrl.uploadMiddleware, ctrl.upload);
-router.post('/:serverId/mkdir', ctrl.mkdir);
-router.delete('/:serverId', ctrl.remove);
+router.get("/", auth, listFiles);
+router.get("/read", auth, readFile);
+router.delete("/", auth, deleteFile);
 
 module.exports = router;

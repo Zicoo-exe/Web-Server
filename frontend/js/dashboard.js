@@ -6,6 +6,8 @@ const el = (id) => document.getElementById(id);
 const fmtMiB = (bytes) => (bytes / 1024 / 1024).toFixed(1);
 const fmtGB = (bytes) => (bytes / 1024 / 1024 / 1024).toFixed(2);
 
+let actionInProgress = false; // lock: prevents poll from overriding button state mid-action
+
 // simple sparkline history buffers
 const history = { cpu: [], mem: [], disk: [] };
 const HISTORY_LEN = 30;
@@ -43,7 +45,10 @@ function drawSparkline(canvasId, dataArr, max, color) {
 
 async function fetchJSON(url, opts) {
   const res = await fetch(url, opts);
-  if (!res.ok) throw new Error(`${url} -> ${res.status}`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `${url} -> ${res.status}`);
+  }
   return res.json();
 }
 
@@ -76,7 +81,16 @@ async function refreshStats() {
   }
 }
 
+function applyButtonState(status) {
+  const running = status === "Online";
+  el("btn-start").disabled = running;
+  el("btn-stop").disabled = !running;
+  el("btn-restart").disabled = !running;
+}
+
 async function refreshServer() {
+  if (actionInProgress) return; // don't let the poll fight with an in-flight action
+
   try {
     const server = await fetchJSON(`/api/servers/${BOT_ID}`);
 
@@ -93,24 +107,26 @@ async function refreshServer() {
     el("info-node").textContent = server.nodeVersion || "—";
     el("info-restarts").textContent = server.restarts ?? 0;
 
-    const running = server.status === "Online";
-    el("btn-start").disabled = running;
-    el("btn-stop").disabled = !running;
-    el("btn-restart").disabled = !running;
+    applyButtonState(server.status);
   } catch (err) {
     console.error("server poll failed", err);
   }
 }
 
 async function doAction(action) {
-  const btn = el(`btn-${action}`);
-  btn.disabled = true;
+  // Lock ALL three buttons immediately — no double-clicks, no poll interference
+  actionInProgress = true;
+  el("btn-start").disabled = true;
+  el("btn-stop").disabled = true;
+  el("btn-restart").disabled = true;
+
   try {
     await fetchJSON(`/api/servers/${BOT_ID}/${action}`, { method: "POST" });
   } catch (err) {
     alert(`Failed to ${action} bot: ${err.message}`);
   } finally {
-    refreshServer();
+    actionInProgress = false;
+    await refreshServer(); // sets correct button state based on real status
   }
 }
 
