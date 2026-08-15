@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard - HomeServer Panel</title>
+<link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+  <nav class="topnav">
+    <span class="brand">HomeServer Panel</span>
+    <div>
+      <a href="/pages/dashboard.html">Dashboard</a>
+      <a href="/pages/settings.html">Settings</a>
+      <button id="logoutBtn">Log Out</button>
+    </div>
+  </nav>
+
+  <main class="dashboard">
+    <section class="stats-grid">
+      <div class="stat-card">
+        <h3>CPU</h3>
+        <p id="cpuUsage">--</p>
+        <small id="cpuBrand"></small>
+      </div>
+      <div class="stat-card">
+        <h3>Memory</h3>
+        <p id="memUsage">--</p>
+      </div>
+      <div class="stat-card">
+        <h3>Host</h3>
+        <p id="hostname">--</p>
+        <small>Uptime: <span id="uptime">--</span></small>
+      </div>
+      <div class="stat-card" id="phoneCard">
+        <h3>Mobile</h3>
+        <p>Connecting...</p>
+      </div>
+    </section>
+
+    <section class="disks">
+      <h2>Storage</h2>
+      <div id="diskList"></div>
+    </section>
+
+    <section class="servers">
+      <h2>Servers</h2>
+      <form id="addServerForm" class="add-server-form">
+        <input type="text" id="serverName" placeholder="Name" required>
+        <input type="text" id="serverCommand" placeholder="Command (e.g. node app.js)" required>
+        <input type="text" id="serverCwd" placeholder="Working directory (optional)">
+        <button type="submit">Add Server</button>
+      </form>
+      <div id="serverList"></div>
+    </section>
+  </main>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+[
+  {
+    "id": "u4kjy30jsgmstsed2v",
+    "name": "test",
+    "command": "node -e \"setInterval(()=>console.log('tick'),1000)\"",
+    "args": [],
+    "cwd": ".",
+    "createdAt": 1786762734007
+  }
+]

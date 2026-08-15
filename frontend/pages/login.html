@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login - Zicoo Server Panel</title>
+<link rel="stylesheet" href="../css/main.css">
+</head>
+<body class="login-page">
+
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="brand-logo">
+        <img src="../assets/icons/logo.png" alt="Zicoo logo">
+      </div>
+      <span>Zicoo Server Panel</span>
+    </div>
+
+    <div class="login-form-wrap">
+      <form id="loginForm">
+        <input type="text" id="username" placeholder="Username" required>
+
+        <div class="password-field">
+          <input type="password" id="password" placeholder="Password" required>
+          <button type="button" id="togglePassword" aria-label="Show password">👁</button>
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+        <p id="loginError" class="error"></p>
+      </form>
+
+      <p class="login-footer">© 2026 Zicoo Server Panel. All rights reserved.</p>
+    </div>
+  </div>
+
+  <div class="login-right"></div>
+
+  <script src="../js/api.js"></script>
+  <script>
+    document.getElementById('togglePassword').addEventListener('click', () => {
+      const pw = document.getElementById('password');
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorEl = document.getElementById('loginError');
+      try {
+        const { token } = await api.login(username, password);
+        setToken(token);
+        window.location.href = '/pages/dashboard.html';
+      } catch (err) {
+        errorEl.textContent = err.message;
+      }
+    });
+  </script>
+</body>
+</html>

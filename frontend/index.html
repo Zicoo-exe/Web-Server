@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>HomeServer Panel</title></head>
+<body>
+<script>
+  window.location.href = localStorage.getItem('hsp_token')
+    ? '/pages/dashboard.html'
+    : '/pages/login.html';
+</script>
+</body>
+</html>

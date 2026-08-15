@@ -1,0 +1,27 @@
+.file-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.file-path { color: #9aa0ab; font-size: 13px; font-family: monospace; }
+.file-toolbar-actions { display: flex; gap: 10px; }
+
+.drop-zone {
+  border: 2px dashed #2a2d35;
+  border-radius: 10px;
+  padding: 28px;
+  text-align: center;
+  color: #9aa0ab;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.drop-zone.dragover { border-color: #4f8cff; background: #14161c; color: #fff; }
+
+.file-table { width: 100%; border-collapse: collapse; }
+.file-table th { text-align: left; font-size: 12px; color: #9aa0ab; padding: 12px 16px; border-bottom: 1px solid #23262e; }
+.file-table td { padding: 12px 16px; border-bottom: 1px solid #23262e; font-size: 14px; }
+.file-table tr:last-child td { border-bottom: none; }
+.file-table .name-cell { display: flex; align-items: center; gap: 8px; }
+.file-icon { opacity: 0.7; }
+.file-table .del-btn { background: #7a1f1f; border: none; padding: 6px 12px; border-radius: 6px; color: #fff; cursor: pointer; font-size: 12px; }
+.file-table .restore-btn { background: #1f7a4d; border: none; padding: 6px 12px; border-radius: 6px; color: #fff; cursor: pointer; font-size: 12px; margin-right: 6px; }
+.file-table .perm-btn { background: #7a1f1f; border: none; padding: 6px 12px; border-radius: 6px; color: #fff; cursor: pointer; font-size: 12px; }
+
+.trash-panel { margin-top: 20px; }

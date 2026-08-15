@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Console - HomeServer Panel</title>
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="../css/console.css">
+</head>
+<body class="console-page">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo"></div>
+      <span>HomeServer</span>
+    </div>
+
+    <div class="sidebar-section">
+      <span class="sidebar-label">General</span>
+      <a href="/pages/dashboard.html" class="sidebar-link">Dashboard</a>
+      <a href="/pages/console.html" class="sidebar-link active">Console</a>
+      <a href="/pages/settings.html" class="sidebar-link">Settings</a>
+    </div>
+
+    <div class="sidebar-section">
+      <span class="sidebar-label">Management</span>
+      <a href="#" id="filesNavLink" class="sidebar-link">Files</a>
+      <a href="#" class="sidebar-link">Backups</a>
+      <a href="#" class="sidebar-link">Network</a>
+    </div>
+
+    <div class="sidebar-footer">
+      <button id="logoutBtn">Log Out</button>
+    </div>
+  </aside>
+
+  <main class="console-main">
+    <header class="server-header">
+      <div class="server-title">
+        <h1 id="serverName">Server</h1>
+        <span id="serverStatus" class="status-pill">Unknown</span>
+      </div>
+      <div class="server-actions-top">
+        <button id="startBtn" class="btn btn-start">Start</button>
+        <button id="restartBtn" class="btn btn-restart">Restart</button>
+        <button id="stopBtn" class="btn btn-stop">Stop</button>
+      </div>
+    </header>
+    <div class="server-header-meta">
+      <span id="serverAddr">--:--</span>
+      <span id="serverCpu">0% / 50%</span>
+      <span id="serverMem">-- / --</span>
+      <span id="serverDisk">-- / --</span>
+    </div>
+
+    <section class="console-stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-top"><h3>CPU Usage:</h3><div class="stat-icon">⚙</div></div>
+        <p id="cpuStat">0% / 50%</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top"><h3>Memory Usage:</h3><div class="stat-icon">▤</div></div>
+        <p id="memStat">-- / --</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top"><h3>Disk Usage:</h3><div class="stat-icon">💾</div></div>
+        <p id="diskStat">-- / --</p>
+      </div>
+    </section>
+
+    <section class="console-box">
+      <div class="console-tabs">
+        <span class="tab active" data-filter="all">View All</span>
+        <span class="tab" data-filter="info">Info</span>
+        <span class="tab" data-filter="warning">Warning</span>
+        <div class="tab-icons">
+          <span title="Clear">🗑</span>
+          <span title="Copy">📋</span>
+          <span title="Expand">⤢</span>
+        </div>
+      </div>
+      <div id="consoleOutput" class="console-output"></div>
+      <form id="commandForm" class="command-bar">
+        <span class="prompt">&gt;&gt;</span>
+        <input type="text" id="commandInput" placeholder="Type a command...">
+        <button type="submit">Send</button>
+      </form>
+    </section>
+
+    <section class="console-stats-grid bottom-stats">
+      <div class="stat-card">
+        <div class="stat-card-top"><h3>CPU Usage:</h3><div class="stat-icon">⚙</div></div>
+        <p id="cpuStatBottom">0% / 50%</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top"><h3>Memory Usage:</h3><div class="stat-icon">▤</div></div>
+        <p id="memStatBottom">-- / --</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top"><h3>Inbound / Outbound:</h3><div class="stat-icon">☁</div></div>
+        <p id="netStatBottom">-- / --</p>
+      </div>
+    </section>
+
+    <p class="console-footer">© 2026 HomeServer Panel. All rights reserved.</p>
+  </main>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/console.js"></script>
+</body>
+</html>

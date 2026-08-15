@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Files - HomeServer Panel</title>
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="../css/console.css">
+<link rel="stylesheet" href="../css/files.css">
+</head>
+<body class="console-page">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo"></div>
+      <span>HomeServer</span>
+    </div>
+    <div class="sidebar-section">
+      <span class="sidebar-label">General</span>
+      <a href="/pages/dashboard.html" class="sidebar-link">Dashboard</a>
+      <a href="/pages/console.html" class="sidebar-link">Console</a>
+      <a href="/pages/settings.html" class="sidebar-link">Settings</a>
+    </div>
+    <div class="sidebar-section">
+      <span class="sidebar-label">Management</span>
+      <a href="#" id="filesNavLink" class="sidebar-link active">Files</a>
+      <a href="#" class="sidebar-link">Backups</a>
+      <a href="#" class="sidebar-link">Network</a>
+    </div>
+    <div class="sidebar-footer">
+      <button id="logoutBtn">Log Out</button>
+    </div>
+  </aside>
+
+  <main class="console-main">
+    <h1 id="serverName" style="margin-bottom:20px">Files</h1>
+
+    <section class="file-toolbar">
+      <div class="file-path" id="filePath">/</div>
+      <div class="file-toolbar-actions">
+        <button id="mkdirBtn" class="btn btn-restart">New Folder</button>
+        <button id="trashToggleBtn" class="btn btn-restart">Trash</button>
+      </div>
+    </section>
+
+    <div id="dropZone" class="drop-zone">
+      <p>Drag &amp; drop a <strong>.zip</strong> file here to upload, or click to browse</p>
+      <input type="file" id="fileInput" accept=".zip" hidden>
+    </div>
+
+    <section class="console-box">
+      <table class="file-table">
+        <thead>
+          <tr><th>Name</th><th>Size</th><th>Modified</th><th></th></tr>
+        </thead>
+        <tbody id="fileListBody"></tbody>
+      </table>
+    </section>
+
+    <section id="trashPanel" class="console-box trash-panel" style="display:none">
+      <div class="console-tabs"><span class="tab active">Trash (auto-deletes after 3 days)</span></div>
+      <table class="file-table">
+        <thead>
+          <tr><th>Name</th><th>Deleted</th><th>Auto-delete in</th><th></th></tr>
+        </thead>
+        <tbody id="trashListBody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/files.js"></script>
+</body>
+</html>
